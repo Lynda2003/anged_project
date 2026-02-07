@@ -1,2 +1,39 @@
-"venv/" 
-".env" 
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Base de données
+*.db
+*.sqlite3
+
+# Secrets
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Uploads
+app/static/uploads/documents/
+
+# Tests
+.pytest_cache/
+htmlcov/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
