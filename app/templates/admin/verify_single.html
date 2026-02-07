@@ -3,9 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Vérifier Document - ANGED</title>
-
     <!-- Liens vers les feuilles de style -->
     <link
       rel="stylesheet"
@@ -15,246 +13,352 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <!-- Ajouter d'autres feuilles de style si nécessaire -->
-
     <style>
-      /* Ajoutez vos styles personnalisés ici si nécessaire */
+      /* Couleurs personnalisées */
+      :root {
+        --main-bg: #f9fafb;
+        --main-color: #4f46e5;
+        --accent-color: #4f46e5;
+        --success-color: #34d399;
+        --error-color: #ef4444;
+        --warning-color: #fbbf24;
+      }
+
+      body {
+        background-color: var(--main-bg);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .card-header {
+        padding: 1.5rem;
+        background-color: var(--main-color);
+        color: white;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .card-content {
+        padding: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        color: white;
+        font-weight: bold;
+      }
+
+      .status-en-attente {
+        background-color: var(--warning-color);
+      }
+
+      .status-valide {
+        background-color: var(--success-color);
+      }
+
+      .status-refuse {
+        background-color: var(--error-color);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        transition: border-color 0.2s;
+      }
+
+      .form-control:focus {
+        border-color: var(--main-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 1.5rem;
+        border-radius: 0.375rem;
+        font-weight: bold;
+        color: white;
+        transition: background-color 0.2s;
+      }
+
+      .btn-primary {
+        background-color: var(--main-color);
+      }
+
+      .btn-primary:hover {
+        background-color: #3730a3;
+      }
+
+      .btn-secondary {
+        background-color: #6b7280;
+      }
+
+      .btn-secondary:hover {
+        background-color: #4b5563;
+      }
+
+      .btn-danger {
+        background-color: var(--error-color);
+      }
+
+      .btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .text-dark {
+        color: #374151;
+      }
+
+      /* Historique styles */
+      .history-card {
+        background-color: #f3f4f6;
+        border-radius: 0.5rem;
+        padding: 1rem;
+      }
     </style>
   </head>
-  <body class="bg-gray-100">
+  <body>
     {% extends "admin/base_admin.html" %} {% block title %}Vérifier Document -
     ANGED{% endblock %} {% block content %}
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="container my-8">
       <!-- En-tête -->
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">
-              <i class="fas fa-file-signature text-purple-600 mr-3"></i>
-              Vérification Document {{ document.type_doc }}
-            </h2>
-            <p class="text-gray-600">
-              Dépôt de {{ document.depot.user.prenom }} {{
-              document.depot.user.nom }}
-            </p>
-          </div>
-
+      <div class="card">
+        <div class="card-header">
+          <h2>
+            <i class="fas fa-file-signature mr-2"></i> Vérification Document {{
+            document.type_doc }}
+          </h2>
+          <p>
+            Dépôt de {{ document.depot.user.prenom }} {{ document.depot.user.nom
+            }}
+          </p>
           <a
             href="{{ url_for('admin.verify_documents') }}"
-            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition"
+            class="btn btn-secondary"
           >
-            <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
+            <i class="fas fa-arrow-left"></i> Retour à la liste
           </a>
         </div>
       </div>
 
       <!-- Informations du document -->
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
-          <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-          Informations
-        </h3>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Type de document</p>
-            <p class="font-semibold text-gray-800">{{ document.type_doc }}</p>
-          </div>
-
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Nom du fichier</p>
-            <p class="font-semibold text-gray-800">
-              {{ document.fichier_nom }}
-            </p>
-          </div>
-
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Date d'upload</p>
-            <p class="font-semibold text-gray-800">
-              {{ document.uploaded_at.strftime('%d/%m/%Y à %H:%M') }}
-            </p>
-          </div>
-
-          <div>
-            <p class="text-sm text-gray-500 mb-1">Statut actuel</p>
-            <span
-              class="inline-block px-3 py-1 rounded-full text-sm font-semibold {% if document.statut_verif == 'en_attente' %}bg-orange-100 text-orange-700 {% elif document.statut_verif == 'valide' %}bg-green-100 text-green-700 {% else %}bg-red-100 text-red-700{% endif %}"
-            >
-              {{ document.statut_verif }}
-            </span>
-          </div>
-
-          <div class="col-span-2">
-            <p class="text-sm text-gray-500 mb-1">Entreprise</p>
-            <p class="font-semibold text-gray-800">
-              {{ document.depot.nom_depot }}
-            </p>
-            <p class="text-sm text-gray-600">{{ document.depot.adresse }}</p>
-          </div>
-
-          <div class="col-span-2">
-            <p class="text-sm text-gray-500 mb-1">Utilisateur</p>
-            <p class="font-semibold text-gray-800">
-              {{ document.depot.user.prenom }} {{ document.depot.user.nom }}
-            </p>
-            <p class="text-sm text-gray-600">{{ document.depot.user.email }}</p>
+      <div class="card mt-4">
+        <div class="card-content">
+          <h3 class="text-xl font-bold mb-4">
+            <i class="fas fa-info-circle mr-2"></i> Informations
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label>Type de document</label>
+              <p class="form-control">{{ document.type_doc }}</p>
+            </div>
+            <div class="form-group">
+              <label>Nom du fichier</label>
+              <p class="form-control">{{ document.fichier_nom }}</p>
+            </div>
+            <div class="form-group">
+              <label>Date d'upload</label>
+              <p class="form-control">
+                {{ document.uploaded_at.strftime('%d/%m/%Y à %H:%M') }}
+              </p>
+            </div>
+            <div class="form-group">
+              <label>Statut actuel</label>
+              <span
+                class="status-badge {% if document.statut_verif == 'en_attente' %}status-en-attente{% elif document.statut_verif == 'valide' %}status-valide{% else %}status-refuse{% endif %}"
+              >
+                {{ document.statut_verif }}
+              </span>
+            </div>
+            <div class="col-span-2 form-group">
+              <label>Entreprise</label>
+              <p class="form-control">{{ document.depot.nom_depot }}</p>
+              <p class="form-control text-gray-600">
+                {{ document.depot.adresse }}
+              </p>
+            </div>
+            <div class="col-span-2 form-group">
+              <label>Utilisateur</label>
+              <p class="form-control">
+                {{ document.depot.user.prenom }} {{ document.depot.user.nom }}
+              </p>
+              <p class="form-control text-gray-600">
+                {{ document.depot.user.email }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Visualisation du document -->
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
-          <i class="fas fa-eye text-green-600 mr-2"></i>
-          Aperçu du document
-        </h3>
-
-        <div class="bg-gray-100 rounded-lg p-4">
-          {% if document.fichier_nom.endswith('.pdf') %}
-          <!-- Aperçu PDF -->
-          <iframe
-            src="{{ url_for('static', filename='uploads/documents/' + document.type_doc + '/' + document.fichier_nom) }}"
-            class="w-full h-96 rounded-lg border-2 border-gray-300"
-          ></iframe>
-          {% else %}
-          <!-- Aperçu Image -->
-          <img
-            src="{{ url_for('static', filename='uploads/documents/' + document.type_doc + '/' + document.fichier_nom) }}"
-            alt="Document"
-            class="max-w-full h-auto rounded-lg border-2 border-gray-300"
-          />
-          {% endif %}
-
-          <!-- Télécharger -->
-          <div class="mt-4 text-center">
-            <a
-              href="{{ url_for('static', filename='uploads/documents/' + document.type_doc + '/' + document.fichier_nom) }}"
-              download
-              class="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-            >
-              <i class="fas fa-download mr-2"></i> Télécharger le document
-            </a>
+      <div class="card mt-4">
+        <div class="card-content">
+          <h3 class="text-xl font-bold mb-4">
+            <i class="fas fa-eye text-green-600 mr-2"></i> Aperçu du document
+          </h3>
+          <div class="bg-gray-100 rounded-lg p-4">
+            {% if document.fichier_nom.endswith('.pdf') %}
+            <iframe
+              src="{{ url_for('static', filename='uploads/documents/' + document.type_doc + '/' + document.fichier_nom) }}"
+              class="w-full h-96 rounded-lg border-2 border-gray-300"
+            ></iframe>
+            {% else %}
+            <img
+              src="{{ url_for('static', filename='uploads/documents/' + document.type_doc + '/' + document.fichier_nom) }}"
+              alt="Document"
+              class="max-w-full h-auto rounded-lg border-2 border-gray-300"
+            />
+            {% endif %}
+            <div class="mt-4 text-center">
+              <a
+                href="{{ url_for('static', filename='uploads/documents/' + document.type_doc + '/' + document.fichier_nom) }}"
+                download
+                class="btn btn-primary"
+              >
+                <i class="fas fa-download"></i> Télécharger le document
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Formulaire de vérification -->
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
-          <i class="fas fa-clipboard-check text-purple-600 mr-2"></i>
-          Décision de vérification
-        </h3>
-
-        <form method="POST" x-data="{ action: '{{ document.statut_verif }}' }">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-          <!-- Choix de l'action -->
-          <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">
-              Décision <span class="text-red-500">*</span>
-            </label>
-
-            <div class="grid grid-cols-2 gap-4">
-              <!-- Valider -->
-              <label class="cursor-pointer">
-                <input
-                  type="radio"
-                  name="action"
-                  value="valider"
-                  x-model="action"
-                  class="peer sr-only"
-                />
-                <div
-                  class="p-6 border-2 border-gray-300 rounded-xl peer-checked:border-green-500 peer-checked:bg-green-50 transition text-center"
-                >
-                  <i
-                    class="fas fa-check-circle text-4xl mb-2 peer-checked:text-green-600"
-                  ></i>
-                  <p class="font-bold text-gray-800">Valider</p>
-                  <p class="text-xs text-gray-600">Document conforme</p>
-                </div>
-              </label>
-
-              <!-- Refuser -->
-              <label class="cursor-pointer">
-                <input
-                  type="radio"
-                  name="action"
-                  value="refuser"
-                  x-model="action"
-                  class="peer sr-only"
-                />
-                <div
-                  class="p-6 border-2 border-gray-300 rounded-xl peer-checked:border-red-500 peer-checked:bg-red-50 transition text-center"
-                >
-                  <i
-                    class="fas fa-times-circle text-4xl mb-2 peer-checked:text-red-600"
-                  ></i>
-                  <p class="font-bold text-gray-800">Refuser</p>
-                  <p class="text-xs text-gray-600">Document non conforme</p>
-                </div>
-              </label>
+      <div class="card mt-4">
+        <div class="card-content">
+          <h3 class="text-xl font-bold mb-4">
+            <i class="fas fa-clipboard-check text-purple-600 mr-2"></i> Décision
+            de vérification
+          </h3>
+          <form
+            method="POST"
+            x-data="{ action: '{{ document.statut_verif }}' }"
+          >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="form-group">
+              <label>Décision <span class="text-red-500">*</span></label>
+              <div class="grid grid-cols-2 gap-4">
+                <label class="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="action"
+                    value="valider"
+                    x-model="action"
+                    class="sr-only"
+                  />
+                  <div
+                    class="p-6 border-2 border-gray-300 rounded-xl peer-checked:border-green-500 transition text-center"
+                  >
+                    <i
+                      class="fas fa-check-circle text-4xl mb-2 peer-checked:text-green-600"
+                    ></i>
+                    <p class="font-bold text-gray-800">Valider</p>
+                    <p class="text-xs text-gray-600">Document conforme</p>
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="action"
+                    value="refuser"
+                    x-model="action"
+                    class="sr-only"
+                  />
+                  <div
+                    class="p-6 border-2 border-gray-300 rounded-xl peer-checked:border-red-500 transition text-center"
+                  >
+                    <i
+                      class="fas fa-times-circle text-4xl mb-2 peer-checked:text-red-600"
+                    ></i>
+                    <p class="font-bold text-gray-800">Refuser</p>
+                    <p class="text-xs text-gray-600">Document non conforme</p>
+                  </div>
+                </label>
+              </div>
             </div>
-          </div>
 
-          <!-- Commentaire -->
-          <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-              Commentaire
-              <span x-show="action === 'refuser'" class="text-red-500">*</span>
-            </label>
-            <textarea
-              name="commentaire"
-              rows="4"
-              :required="action === 'refuser'"
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition"
-              placeholder="Ajoutez un commentaire (obligatoire en cas de refus)"
-            >
+            <div class="form-group mb-6">
+              <label
+                >Commentaire
+                <span x-show="action === 'refuser'" class="text-red-500"
+                  >*</span
+                ></label
+              >
+              <textarea
+                name="commentaire"
+                rows="4"
+                :required="action === 'refuser'"
+                class="form-control"
+                placeholder="Ajoutez un commentaire (obligatoire en cas de refus)"
+              >
 {{ document.commentaire_admin }}</textarea
-            >
-          </div>
+              >
+            </div>
 
-          <!-- Boutons -->
-          <div class="flex items-center justify-end space-x-4">
-            <a
-              href="{{ url_for('admin.verify_documents') }}"
-              class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition"
-            >
-              Annuler
-            </a>
-
-            <button
-              type="submit"
-              class="px-8 py-3 rounded-lg transition transform hover:scale-105 shadow-lg text-white font-semibold"
-              :class="action === 'valider' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'"
-            >
-              <i
-                class="fas mr-2"
-                :class="action === 'valider' ? 'fa-check' : 'fa-times'"
-              ></i>
-              <span
-                x-text="action === 'valider' ? 'Valider le document' : 'Refuser le document'"
-              ></span>
-            </button>
-          </div>
-        </form>
+            <div class="flex items-center justify-end space-x-4">
+              <a
+                href="{{ url_for('admin.verify_documents') }}"
+                class="btn btn-secondary"
+                >Annuler</a
+              >
+              <button
+                type="submit"
+                class="btn transition"
+                :class="action === 'valider' ? 'bg-green-600' : 'bg-red-600'"
+              >
+                <i
+                  class="fas mr-2"
+                  :class="action === 'valider' ? 'fa-check' : 'fa-times'"
+                ></i>
+                <span
+                  x-text="action === 'valider' ? 'Valider le document' : 'Refuser le document'"
+                ></span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- Historique (si vérifications précédentes) -->
       {% if document.date_verification %}
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
-          <i class="fas fa-history text-gray-600 mr-2"></i>
-          Historique
-        </h3>
-
-        <div class="space-y-3">
-          <div class="p-4 bg-gray-50 rounded-lg">
+      <div class="card mt-4">
+        <div class="card-content">
+          <h3 class="text-xl font-bold mb-4">
+            <i class="fas fa-history text-gray-600 mr-2"></i> Historique
+          </h3>
+          <div class="history-card">
             <div class="flex items-center justify-between mb-2">
               <p class="font-semibold text-gray-800">Dernière vérification</p>
-              <span class="text-xs text-gray-500">
-                {{ document.date_verification.strftime('%d/%m/%Y à %H:%M') }}
-              </span>
+              <span class="text-xs text-gray-500"
+                >{{ document.date_verification.strftime('%d/%m/%Y à %H:%M')
+                }}</span
+              >
             </div>
             {% if document.admin %}
             <p class="text-sm text-gray-600">
@@ -277,6 +381,5 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs" defer></script>
-    <!-- Ajouter d'autres scripts si nécessaire -->
   </body>
 </html>
