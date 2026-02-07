@@ -1,0 +1,182 @@
+<!-- Composant d'upload animé -->
+<div
+  class="upload-zone"
+  x-data="uploadComponent()"
+  @drop.prevent="handleDrop($event)"
+  @dragover.prevent
+  @dragenter="isDragging = true"
+  @dragleave="isDragging = false"
+>
+  <div
+    class="border-4 border-dashed rounded-2xl p-8 text-center transition-all duration-300"
+    :class="isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400'"
+  >
+    <!-- Zone de drop -->
+    <div class="mb-4">
+      <i
+        class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4 block animate-bounce"
+      ></i>
+      <p class="text-lg font-semibold text-gray-700 mb-2">
+        Glissez-déposez votre fichier ici
+      </p>
+      <p class="text-sm text-gray-500">ou</p>
+    </div>
+
+    <!-- Bouton upload -->
+    <button
+      type="button"
+      @click="$refs.fileInput.click()"
+      class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105"
+    >
+      <i class="fas fa-folder-open mr-2"></i>
+      Parcourir les fichiers
+    </button>
+
+    <!-- Input caché -->
+    <input
+      type="file"
+      x-ref="fileInput"
+      @change="handleFileSelect($event)"
+      class="hidden"
+      accept=".pdf,.jpg,.jpeg,.png"
+    />
+
+    <!-- Aperçu du fichier sélectionné -->
+    <div
+      x-show="selectedFile"
+      class="mt-6 p-4 bg-gray-50 rounded-lg animate-fade-in"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-file text-blue-600 text-2xl"></i>
+          <div class="text-left">
+            <p
+              class="font-semibold text-gray-800"
+              x-text="selectedFile?.name"
+            ></p>
+            <p
+              class="text-xs text-gray-500"
+              x-text="formatFileSize(selectedFile?.size)"
+            ></p>
+          </div>
+        </div>
+        <button
+          @click="clearFile()"
+          class="text-red-500 hover:text-red-700 transition-colors"
+        >
+          <i class="fas fa-times-circle text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Barre de progression -->
+      <div x-show="uploading" class="mt-4">
+        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div
+            class="bg-blue-600 h-full rounded-full transition-all duration-300 progress-bar"
+            :style="`width: ${uploadProgress}%`"
+          ></div>
+        </div>
+        <p
+          class="text-xs text-gray-600 mt-2 text-center"
+          x-text="`${uploadProgress}%`"
+        ></p>
+      </div>
+
+      <!-- Bouton d'envoi -->
+      <button
+        x-show="!uploading && selectedFile"
+        @click="uploadFile()"
+        hx-post="{{ url_for('depot.upload', type='RNE') }}"
+        hx-encoding="multipart/form-data"
+        hx-target="#upload-result"
+        class="w-full mt-4 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 animate-pulse-slow"
+      >
+        <i class="fas fa-upload mr-2"></i>
+        Envoyer le fichier
+      </button>
+    </div>
+  </div>
+
+  <!-- Zone de résultat -->
+  <div id="upload-result" class="mt-4"></div>
+</div>
+
+<script>
+  function uploadComponent() {
+    return {
+      isDragging: false,
+      selectedFile: null,
+      uploading: false,
+      uploadProgress: 0,
+
+      handleDrop(event) {
+        this.isDragging = false;
+        this.setSelectedFile(event.dataTransfer.files);
+      },
+
+      handleFileSelect(event) {
+        this.setSelectedFile(event.target.files);
+      },
+
+      setSelectedFile(files) {
+        if (files.length > 0) {
+          this.selectedFile = files[0];
+        }
+      },
+
+      clearFile() {
+        this.selectedFile = null;
+        this.$refs.fileInput.value = "";
+      },
+
+      uploadFile() {
+        if (!this.selectedFile) return;
+
+        this.uploading = true;
+        this.uploadProgress = 0;
+
+        const formData = new FormData();
+        formData.append("file", this.selectedFile);
+
+        const xhr = new XMLHttpRequest();
+
+        // Événements de mise à jour de la progression
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            this.uploadProgress = Math.round((e.loaded / e.total) * 100);
+          }
+        });
+
+        // Événement de chargement réussi
+        xhr.addEventListener("load", () => {
+          this.uploading = false;
+          if (xhr.status === 200) {
+            showNotification("Fichier uploadé avec succès !", "success");
+            this.clearFile();
+          } else {
+            showNotification("Erreur lors de l'upload", "error");
+          }
+        });
+
+        // Gestion d'erreur
+        xhr.addEventListener("error", () => {
+          this.uploading = false;
+          showNotification("Erreur réseau", "error");
+        });
+
+        // Envoi de la requête
+        xhr.open("POST", '{{ url_for("depot.upload", type="RNE") }}');
+        xhr.send(formData);
+      },
+
+      formatFileSize(bytes) {
+        if (!bytes) return "";
+        const sizes = ["octets", "Ko", "Mo", "Go"];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${
+          sizes[i]
+        }`;
+      },
+    };
+  }
+</script>

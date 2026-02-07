@@ -1,0 +1,69 @@
+/* =====================================
+   ANGed – Palette de Couleurs Officielle
+   Étape 2.1 : Design & Wireframes
+===================================== */
+
+:root {
+    /* Couleurs de marque */
+    --primary-blue: #1e40af;
+    --primary-blue-dark: #1e3a8a;
+    --primary-blue-light: #3b82f6;
+  
+    /* Couleurs de statut */
+    --status-green: #10b981;   /* Dossier complet */
+    --status-orange: #f59e0b;  /* Dossier incomplet */
+    --status-red: #ef4444;     /* Dossier refusé */
+  
+    /* Couleurs des cahiers */
+    --recyclage-color: #059669;
+    --stockage-color: #ea580c;
+  
+    /* Neutres */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+  
+    /* Système */
+    --success: #22c55e;
+    --warning: #eab308;
+    --error: #dc2626;
+    --info: #3b82f6;
+  }
+  /*Bouton principal (Login / Submit)*/
+  .btn-primary {
+    background-color: var(--primary-blue);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-blue-dark);
+  }
+
+  /*Statut du dossier (Fenêtre 3)*/
+  .status-green {
+    color: var(--status-green);
+  }
+  
+  .status-orange {
+    color: var(--status-orange);
+  }
+  
+  .status-red {
+    color: var(--status-red);
+  }
+
+  /*Cahiers de charge*/
+  .cahier-recyclage {
+    border-left: 6px solid var(--recyclage-color);
+  }
+  
+  .cahier-stockage {
+    border-left: 6px solid var(--stockage-color);
+  }
+  
+    
+  
+  

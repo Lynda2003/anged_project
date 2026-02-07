@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Dashboard Admin - ANGED</title>
+
+    <!-- Liens vers les feuilles de style -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Ajouter d'autres feuilles de style si nécessaire -->
+
+    <style>
+      /* Ajoutez vos styles personnalisés ici si nécessaire */
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    {% extends "admin/base_admin.html" %} {% block title %}Dashboard Admin -
+    ANGED{% endblock %} {% block content %}
+    <div class="space-y-8">
+      <!-- En-tête -->
+      <div class="animate-fade-in">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">
+          <i class="fas fa-tachometer-alt text-purple-600 mr-3"></i>
+          Tableau de Bord Administrateur
+        </h2>
+        <p class="text-gray-600">Vue d'ensemble de la plateforme ANGED</p>
+      </div>
+
+      <!-- Statistiques Rapides -->
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-up"
+      >
+        <!-- Total Utilisateurs -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 transform hover:scale-105 transition"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Utilisateurs</p>
+              <p class="text-3xl font-bold text-gray-800">
+                {{ stats.total_users }}
+              </p>
+            </div>
+            <div
+              class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-users text-3xl text-blue-600"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents en attente -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 transform hover:scale-105 transition"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">En attente</p>
+              <p class="text-3xl font-bold text-gray-800">
+                {{ stats.documents_en_attente }}
+              </p>
+              {% if stats.documents_urgents > 0 %}
+              <p class="text-xs text-red-600 mt-1">
+                <i class="fas fa-exclamation-triangle"></i> {{
+                stats.documents_urgents }} urgents
+              </p>
+              {% endif %}
+            </div>
+            <div
+              class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-clock text-3xl text-orange-600"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents validés -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 transform hover:scale-105 transition"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Validés</p>
+              <p class="text-3xl font-bold text-gray-800">
+                {{ stats.documents_valides }}
+              </p>
+            </div>
+            <div
+              class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-check-circle text-3xl text-green-600"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents refusés -->
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 transform hover:scale-105 transition"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Refusés</p>
+              <p class="text-3xl font-bold text-gray-800">
+                {{ stats.documents_refuses }}
+              </p>
+            </div>
+            <div
+              class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-times-circle text-3xl text-red-600"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Répartition des Statuts -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Graphique Statuts -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-chart-pie text-purple-600 mr-2"></i>
+            Répartition des Statuts
+          </h3>
+
+          <div class="flex items-center justify-center space-x-8">
+            <!-- Vert -->
+            <div class="text-center">
+              <div
+                class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-2 mx-auto"
+              >
+                <span class="text-3xl font-bold text-green-600"
+                  >{{ stats.statuts.vert }}</span
+                >
+              </div>
+              <p class="text-sm font-semibold text-gray-700">VERT</p>
+              <p class="text-xs text-gray-500">Complets</p>
+            </div>
+
+            <!-- Orange -->
+            <div class="text-center">
+              <div
+                class="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mb-2 mx-auto"
+              >
+                <span class="text-3xl font-bold text-orange-600"
+                  >{{ stats.statuts.orange }}</span
+                >
+              </div>
+              <p class="text-sm font-semibold text-gray-700">ORANGE</p>
+              <p class="text-xs text-gray-500">Incomplets</p>
+            </div>
+
+            <!-- Rouge -->
+            <div class="text-center">
+              <div
+                class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-2 mx-auto"
+              >
+                <span class="text-3xl font-bold text-red-600"
+                  >{{ stats.statuts.rouge }}</span
+                >
+              </div>
+              <p class="text-sm font-semibold text-gray-700">ROUGE</p>
+              <p class="text-xs text-gray-500">Refusés</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions Rapides -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-bolt text-purple-600 mr-2"></i>
+            Actions Rapides
+          </h3>
+
+          <div class="space-y-3">
+            <a
+              href="{{ url_for('admin.verify_documents') }}"
+              class="block p-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition transform hover:scale-105 shadow-lg"
+            >
+              <i class="fas fa-check-double mr-2"></i>
+              Vérifier les documents ({{ stats.documents_en_attente }})
+            </a>
+
+            <a
+              href="{{ url_for('admin.users') }}"
+              class="block p-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition transform hover:scale-105 shadow-lg"
+            >
+              <i class="fas fa-users-cog mr-2"></i>
+              Gérer les utilisateurs
+            </a>
+
+            <a
+              href="{{ url_for('admin.statistics') }}"
+              class="block p-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg transition transform hover:scale-105 shadow-lg"
+            >
+              <i class="fas fa-chart-line mr-2"></i>
+              Voir les statistiques détaillées
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activité Récente -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">
+          <i class="fas fa-history text-purple-600 mr-2"></i>
+          Activité Récente
+        </h3>
+
+        {% if activites %}
+        <div class="space-y-3">
+          {% for activite in activites %}
+          <div
+            class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+          >
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center mr-4 {% if activite.nouveau_statut == 'vert' %}bg-green-100 text-green-600 {% elif activite.nouveau_statut == 'orange' %}bg-orange-100 text-orange-600 {% else %}bg-red-100 text-red-600{% endif %}"
+            >
+              <i class="fas fa-circle"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-gray-800">
+                Dépôt #{{ activite.suivi.depot_id }} : {{ activite.ancien_statut
+                }} → {{ activite.nouveau_statut }}
+              </p>
+              <p class="text-xs text-gray-500">
+                {{ activite.date_modification.strftime('%d/%m/%Y %H:%M') }} {%
+                if activite.admin %}par {{ activite.admin.prenom }} {{
+                activite.admin.nom }}{% endif %}
+              </p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-center py-8">Aucune activité récente</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endblock %}
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <!-- Ajouter d'autres scripts si nécessaire -->
+  </body>
+</html>

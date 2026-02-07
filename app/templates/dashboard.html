@@ -1,0 +1,217 @@
+{% extends "base.html" %} {% block title %}Dashboard - ANGED{% endblock %} {%
+block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+  <!-- Navbar -->
+  <nav class="bg-white shadow-lg sticky top-0 z-50 animate-slide-down">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center space-x-4 animate-fade-in">
+          <div
+            class="w-12 h-12 rounded-lg overflow-hidden transform hover:rotate-12 transition-transform duration-300"
+          >
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgIRUKtm_GATZNUyCDh8nytPueS2VrClNLaQ&s"
+              alt="Logo ANGED"
+              class="w-full h-full object-contain"
+            />
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-800">ANGED</h1>
+            <p class="text-xs text-gray-500">Système de Gestion</p>
+          </div>
+        </div>
+
+        <!-- User Menu -->
+        <div x-data="{ open: false }" class="relative animate-fade-in">
+          <button
+            @click="open = !open"
+            class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center"
+            >
+              <span class="text-white font-bold">
+                {{ current_user.prenom[:1] }}{{ current_user.nom[:1] }}
+              </span>
+            </div>
+            <div class="text-left">
+              <p class="font-semibold text-gray-800">
+                {{ current_user.prenom }} {{ current_user.nom }}
+              </p>
+              <p class="text-xs text-gray-500">{{ current_user.email }}</p>
+            </div>
+            <i
+              class="fas fa-chevron-down text-gray-500"
+              x-bind:class="{ 'rotate-180': open }"
+            ></i>
+          </button>
+
+          <!-- Dropdown -->
+          <div
+            x-show="open"
+            x-transition
+            @click.away="open = false"
+            class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl py-2 z-50"
+          >
+            <a
+              href="{{ url_for('auth.profile') }}"
+              class="block px-4 py-3 hover:bg-gray-50"
+            >
+              <i class="fas fa-user mr-2 text-blue-600"></i>Mon profil
+            </a>
+            <a
+              href="{{ url_for('auth.settings') }}"
+              class="block px-4 py-3 hover:bg-gray-50"
+            >
+              <i class="fas fa-cog mr-2 text-gray-600"></i>Paramètres
+            </a>
+            <hr class="my-2" />
+            <a
+              href="{{ url_for('auth.logout') }}"
+              class="block px-4 py-3 hover:bg-red-50 text-red-600"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="container mx-auto px-6 py-8">
+    <!-- Title -->
+    <div class="mb-8 animate-fade-in">
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-tachometer-alt text-blue-600 mr-3"></i>
+        Tableau de Bord
+      </h2>
+      <p class="text-gray-600">Bienvenue, {{ current_user.prenom }} !</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      {% for stat in stats %}
+      <div
+        class="stagger-item bg-white rounded-xl shadow-lg p-6 card-hover border-l-4 border-blue-500"
+      >
+        <p class="text-gray-500 text-sm">{{ stat.label }}</p>
+        <p class="text-3xl font-bold text-gray-800">{{ stat.value }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Cahiers -->
+      <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div
+          class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white"
+        >
+          <h3 class="text-2xl font-bold">
+            <i class="fas fa-file-alt mr-3"></i>Cahiers de Charge
+          </h3>
+        </div>
+
+        <div class="p-6 space-y-4">
+          {% for type in ['recyclage', 'stockage'] %}
+          <div class="bg-green-50 rounded-xl p-6 border-2 border-green-200">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mr-4"
+              >
+                <i
+                  class="{% if type == 'recyclage' %}fas fa-recycle{% else %}fas fa-warehouse{% endif %} text-white text-2xl"
+                ></i>
+              </div>
+              <h4 class="text-lg font-bold text-gray-800">
+                {{ type|capitalize }}
+              </h4>
+            </div>
+
+            <a
+              href="{{ url_for('cahier.create', type_cahier=type) }}"
+              class="block w-full text-center bg-green-600 text-white py-2 rounded-lg mb-2"
+            >
+              Créer
+            </a>
+
+            <a
+              href="{{ url_for('cahier.list', type=type) }}"
+              class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg mb-2"
+            >
+              Afficher
+            </a>
+
+            <a
+              href="{{ url_for('cahier.download', type=type) }}"
+              class="block w-full text-center bg-gray-600 text-white py-2 rounded-lg"
+            >
+              Télécharger
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div
+          class="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 text-white"
+        >
+          <h3 class="text-2xl font-bold">
+            <i class="fas fa-folder-open mr-3"></i>Documents
+          </h3>
+        </div>
+
+        <div class="p-6 space-y-4">
+          {% for doc in documents %}
+          <div class="border rounded-xl p-4">
+            <h4 class="font-bold">{{ doc.title }}</h4>
+            <p class="text-sm text-gray-500">{{ doc.description }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Statut -->
+      <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div
+          class="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white"
+        >
+          <h3 class="text-2xl font-bold">
+            <i class="fas fa-traffic-light mr-3"></i>Statut
+          </h3>
+        </div>
+
+        <div class="p-6 text-center">
+          {% if statut == 'vert' %}
+          <p class="text-green-600 font-bold text-xl">COMPLET</p>
+          {% elif statut == 'orange' %}
+          <p class="text-orange-600 font-bold text-xl">INCOMPLET</p>
+          {% else %}
+          <p class="text-red-600 font-bold text-xl">REFUSÉ</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes slide-down {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  .animate-slide-down {
+    animation: slide-down 0.5s ease-out;
+  }
+</style>
+{% endblock %}

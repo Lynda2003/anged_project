@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Gestion Utilisateurs - ANGED</title>
+
+    <!-- Liens vers les feuilles de style -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      /* Styles personnalisés pour la page de gestion des utilisateurs */
+      body {
+        background-color: #f9fafb; /* Couleur de fond plus douce pour l'expérience utilisateur */
+        font-family: "Arial", sans-serif;
+      }
+
+      .rounded-xl {
+        border-radius: 0.75rem; /* Arrondir les coins */
+      }
+
+      .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        font-size: 1.5rem; /* Ajuster la taille des titres */
+      }
+
+      .bg-purple-600 {
+        background-color: #5b21b6; /* Couleur principale de l'admin */
+      }
+
+      .bg-purple-100 {
+        background-color: #e0cba8; /* Couleur de fond légère pour les sections */
+      }
+
+      .bg-red-100 {
+        background-color: #feeced; /* Couleur de fond pour les alertes */
+      }
+
+      .bg-gray-200 {
+        background-color: #e5e7eb; /* Couleur de fond pour les boutons désactivés */
+      }
+
+      .text-gray-500 {
+        color: #6b7280; /* Couleur pour le texte secondaire */
+      }
+
+      .text-purple-700 {
+        color: #4c1d95; /* Couleur du texte pour le statut actif */
+      }
+
+      .transition {
+        transition: all 0.3s ease;
+      }
+
+      .hover\:bg-purple-700:hover {
+        background-color: #4e1a9b; /* Couleur au survol pour les boutons */
+      }
+
+      .hover\:bg-gray-400:hover {
+        background-color: #a1a1a1; /* Couleur au survol pour le bouton réinitialiser */
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #6b46c1;
+        box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.5);
+      }
+
+      /* Styles pour le tableau */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 1rem;
+        text-align: left;
+      }
+
+      th {
+        background-color: #5b21b6;
+        color: white;
+      }
+
+      /* Styles pour les boutons */
+      button {
+        cursor: pointer;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .bg-red-200 {
+        transition: background-color 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends "admin/base_admin.html" %} {% block title %}Gestion Utilisateurs
+    - ANGED{% endblock %} {% block content %}
+    <div class="space-y-6">
+      <!-- En-tête avec recherche -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">
+              <i class="fas fa-users-cog text-purple-600 mr-3"></i>
+              Gestion des Utilisateurs
+            </h2>
+            <p class="text-gray-600 text-sm">
+              {{ users.total }} utilisateur(s) enregistré(s)
+            </p>
+          </div>
+        </div>
+
+        <!-- Barre de recherche -->
+        <form method="GET" class="flex items-center space-x-4">
+          <div class="flex-1">
+            <input
+              type="text"
+              name="search"
+              value="{{ search }}"
+              placeholder="Rechercher par email, nom ou prénom..."
+              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+            />
+          </div>
+          <button
+            type="submit"
+            class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition"
+          >
+            <i class="fas fa-search mr-2"></i>Rechercher
+          </button>
+          {% if search %}
+          <a
+            href="{{ url_for('admin.users') }}"
+            class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition"
+          >
+            <i class="fas fa-times mr-2"></i>Réinitialiser
+          </a>
+          {% endif %}
+        </form>
+      </div>
+
+      <!-- Liste des utilisateurs -->
+      {% if users.items %}
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <table class="min-w-full">
+          <thead class="bg-purple-600 text-white">
+            <tr>
+              <th class="px-6 py-4 text-left">Utilisateur</th>
+              <th class="px-6 py-4 text-left">Email</th>
+              <th class="px-6 py-4 text-left">Inscription</th>
+              <th class="px-6 py-4 text-center">Statut</th>
+              <th class="px-6 py-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            {% for user in users.items %}
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <div
+                    class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3"
+                  >
+                    <span class="font-bold text-purple-600">
+                      {{ user.prenom[0] }}{{ user.nom[0] }}
+                    </span>
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-800">
+                      {{ user.prenom }} {{ user.nom }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-gray-700">{{ user.email }}</td>
+              <td class="px-6 py-4 text-gray-600 text-sm">
+                {{ user.created_at.strftime('%d/%m/%Y') }}
+              </td>
+              <td class="px-6 py-4 text-center">
+                <span
+                  class="inline-block px-3 py-1 rounded-full text-xs font-semibold {% if user.actif %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}"
+                >
+                  {% if user.actif %}Actif{% else %}Inactif{% endif %}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center justify-center space-x-2">
+                  <!-- Activer/Désactiver -->
+                  <form
+                    method="POST"
+                    action="{{ url_for('admin.toggle_user_active', user_id=user.id) }}"
+                    class="inline"
+                  >
+                    <input
+                      type="hidden"
+                      name="csrf_token"
+                      value="{{ csrf_token() }}"
+                    />
+                    <button
+                      type="submit"
+                      class="px-3 py-1 rounded-lg text-sm transition {% if user.actif %}bg-orange-100 hover:bg-orange-200 text-orange-700{% else %}bg-green-100 hover:bg-green-200 text-green-700{% endif %}"
+                    >
+                      <i
+                        class="fas {% if user.actif %}fa-ban{% else %}fa-check{% endif %} mr-1"
+                      ></i>
+                      {% if user.actif %}Désactiver{% else %}Activer{% endif %}
+                    </button>
+                  </form>
+
+                  <!-- Supprimer -->
+                  <form
+                    method="POST"
+                    action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')"
+                    class="inline"
+                  >
+                    <input
+                      type="hidden"
+                      name="csrf_token"
+                      value="{{ csrf_token() }}"
+                    />
+                    <button
+                      type="submit"
+                      class="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition"
+                    >
+                      <i class="fas fa-trash mr-1"></i>Supprimer
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if users.has_prev or users.has_next %}
+      <div class="flex justify-center space-x-2">
+        {% if users.has_prev %}
+        <a
+          href="?page={{ users.prev_num }}{% if search %}&search={{ search }}{% endif %}"
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition"
+        >
+          <i class="fas fa-chevron-left"></i> Précédent
+        </a>
+        {% endif %}
+
+        <span
+          class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold"
+        >
+          Page {{ users.page }} / {{ users.pages }}
+        </span>
+
+        {% if users.has_next %}
+        <a
+          href="?page={{ users.next_num }}{% if search %}&search={{ search }}{% endif %}"
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition"
+        >
+          Suivant <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+      </div>
+      {% endif %} {% else %}
+      <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+        <i class="fas fa-user-slash text-6xl text-gray-300 mb-4"></i>
+        <p class="text-xl text-gray-500">Aucun utilisateur trouvé</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endblock %}
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs" defer></script>
+  </body>
+</html>
